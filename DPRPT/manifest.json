@@ -1,0 +1,25 @@
+{
+    "name": "Sistem DPRPT Papua Tengah",
+    "short_name": "DPRPT",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "theme_color": "#4f46e5",
+    "background_color": "#ffffff",
+    "description": "Sistem Input Output DPRPT Papua Tengah",
+    "icons": [
+        {
+            "src": "icons/javascript.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "icons/javascript2.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
