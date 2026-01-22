@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sistem SPK DPRPT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1e40af" />
+    <meta
+      name="description"
+      content="Sistem Surat Perintah Kerja DPRPT Papua Tengah"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icons/javascript.png" />
+  </head>
+  <body>
+    <!-- LOGIN OVERLAY -->
+    <div
+      id="loginOverlay"
+      style="
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      "
+    >
+      <div
+        style="
+          background: white;
+          padding: 25px;
+          border-radius: 8px;
+          width: 300px;
+          text-align: center;
+        "
+      >
+        <h3>Login Sistem SPK</h3>
+        <input
+          id="loginUsername"
+          placeholder="Username"
+          style="width: 100%; margin: 8px 0"
+        />
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Password"
+          style="width: 100%; margin: 8px 0"
+        />
+        <button onclick="login()" style="width: 100%">Login</button>
+        <p id="loginStatus" style="color: red; font-size: 13px"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="header">
+        <h1>SURAT PERINTAH KERJA (SPK)</h1>
+        <p class="subtitle">SEKRETARIAT DPRPT PROVINSI PAPUA TENGAH</p>
+      </div>
+
+      <!-- NOMOR SPK -->
+      <div class="form-group">
+        <label for="nomorSPK">Nomor SPK</label>
+        <input
+          type="text"
+          id="nomorSPK"
+          placeholder="0004/SPK-MMK/DBH/DPRPT/IX/2025"
+        />
+      </div>
+
+      <!-- TANGGAL SPK -->
+      <div class="form-group">
+        <label for="tanggalSPK">Tanggal SPK</label>
+        <input type="date" id="tanggalSPK" />
+      </div>
+
+      <!-- NAMA PPK -->
+      <div class="form-group">
+        <label for="namaPPK">Nama PPK</label>
+        <input
+          type="text"
+          id="namaPPK"
+          placeholder="Kabag Fasilitasi Penganggaran dan Pengawasan"
+        />
+      </div>
+
+      <!-- NAMA PENYEDIA -->
+      <div class="form-group">
+        <label for="namaPenyedia">Nama Penyedia</label>
+        <input type="text" id="namaPenyedia" placeholder="Atha Catering" />
+      </div>
+
+      <!-- PAKET PEKERJAAN -->
+      <div class="form-group">
+        <label for="paketPekerjaan">Paket Pekerjaan</label>
+        <input
+          type="text"
+          id="paketPekerjaan"
+          placeholder="Belanja Kertas Dan Cover Kegiatan Pembahasan Perubahan APBD"
+        />
+      </div>
+
+      <!-- NOMOR DPA -->
+      <input
+        type="hidden"
+        id="nomorDPA"
+        value="DPA/A.1/4.02.0.00.0.00.16.0000/001/2026"
+      />
+
+      <!-- TANGGAL DPA -->
+      <div class="form-group">
+        <label for="tanggalDPA">Tanggal DPA</label>
+        <input type="date" id="tanggalDPA" />
+      </div>
+
+      <!-- KEGIATAN -->
+      <div class="form-group">
+        <label for="kegiatan">Kegiatan</label>
+        <input
+          type="text"
+          id="kegiatan"
+          placeholder="4.02.02.1.02 Pembahasan Kebijakan Anggaran"
+        />
+      </div>
+
+      <!-- SUB KEGIATAN -->
+      <div class="form-group">
+        <label for="subKegiatan">Sub Kegiatan</label>
+        <input
+          type="text"
+          id="subKegiatan"
+          placeholder="4.02.02.1.02.0004 Pembahasan Perubahan APBD"
+        />
+      </div>
+
+      <!-- SUMBER DANA -->
+      <div class="form-group">
+        <label for="sumberDana">Sumber Dana</label>
+        <input
+          type="text"
+          id="sumberDana"
+          placeholder="Dana Bagi Hasil (DBH)"
+          value="Dana Bagi Hasil (DBH)"
+        />
+      </div>
+
+      <!-- RINCIAN PEKERJAAN (TEXTAREA) -->
+      <div class="form-group">
+        <label for="rincianPekerjaan"
+          >Rincian Pekerjaan (Format: No|Uraian|Qty|Satuan|Harga|Total)</label
+        >
+        <textarea
+          id="rincianPekerjaan"
+          rows="8"
+          placeholder="Contoh format:
+1|Amplop Coklat Jaya Super Map|219|Pak|159100|34524700
+2|Kertas Cover/ Jilid|319|Pak|92200|29411800
+3|Kertas HVS A4/ 70 Gram|250|Rim|85200|21300000"
+          oninput="hitungTotalKontrak()"
+        ></textarea>
+        <small style="color: #666; display: block; margin-top: 5px">
+          Pisahkan setiap kolom dengan | (pipe), setiap baris baru untuk item
+          baru.
+          <strong>Nilai Kontrak & Terbilang akan otomatis terhitung.</strong>
+        </small>
+      </div>
+
+      <!-- NILAI KONTRAK (READONLY - AUTO CALCULATED) -->
+      <div class="form-group">
+        <label for="nilaiKontrak">Nilai Kontrak (Rp) - Otomatis</label>
+        <input
+          type="text"
+          id="nilaiKontrak"
+          placeholder="Akan otomatis terisi dari total rincian"
+          readonly
+          style="background-color: #f0f0f0; cursor: not-allowed"
+        />
+      </div>
+
+      <!-- TERBILANG (READONLY - AUTO CALCULATED) -->
+      <div class="form-group">
+        <label for="terbilang">Terbilang - Otomatis</label>
+        <input
+          type="text"
+          id="terbilang"
+          placeholder="Akan otomatis terisi dari nilai kontrak"
+          readonly
+          style="background-color: #f0f0f0; cursor: not-allowed"
+        />
+      </div>
+
+      <!-- WAKTU PELAKSANAAN -->
+      <div class="form-group">
+        <label for="waktuPelaksanaan">Waktu Pelaksanaan (Hari)</label>
+        <input type="number" id="waktuPelaksanaan" placeholder="30" />
+      </div>
+
+      <!-- LOKASI -->
+      <div class="form-group">
+        <label for="lokasi">Lokasi</label>
+        <input type="text" id="lokasi" placeholder="Nabire" value="Nabire" />
+      </div>
+
+      <!-- TANGGAL PENANDATANGANAN -->
+      <div class="form-group">
+        <label for="tanggalTTD">Tanggal Penandatanganan</label>
+        <input type="date" id="tanggalTTD" />
+      </div>
+
+      <div class="form-group">
+        <label for="namaPihakPertama">Nama Pihak Pertama</label>
+        <input type="text" id="namaPihakPertama" placeholder="Nama PPK" />
+      </div>
+
+      <div class="form-group">
+        <label for="Pangkat">Pangkat/Golongan Pihak Pertama</label>
+        <input type="text" id="Pangkat" placeholder="Pangkat/Golongan" />
+      </div>
+
+      <div class="form-group">
+        <label for="nipPihakPertama">NIP Pihak Pertama</label>
+        <input type="text" id="nipPihakPertama" placeholder="19xxxxxxxxxxxx" />
+      </div>
+
+      <div class="form-group">
+        <label for="namaDirektur">Nama Direktur</label>
+        <input
+          type="text"
+          id="namaDirektur"
+          placeholder="Nama Direktur Penyedia"
+        />
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="btn-group">
+        <button onclick="generatePDF()">📄 Download PDF</button>
+        <button class="secondary" onclick="generateWord()">
+          📝 Download Word
+        </button>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <script src="libs/jspdf.umd.min.js"></script>
+    <script src="libs/docx.min.js"></script>
+    <script src="libs/FileSaver.min.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      window.addEventListener("load", () => {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker
+            .register("sw.js")
+            .then((reg) => console.log("Service Worker registered:", reg))
+            .catch((err) =>
+              console.error("Service Worker registration failed:", err)
+            );
+        }
+      });
+    </script>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
